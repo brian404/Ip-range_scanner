@@ -1,15 +1,21 @@
 import requests
+import ipaddress
 
-def scan_range(start_ip, end_ip):
-    for i in range(start_ip, end_ip+1):
-        try:
-            ip = f"http://{i}"
-            response = requests.get(ip)
-            print(f"{ip}: {response.status_code}")
-        except requests.exceptions.ConnectionError:
-            print(f"{ip}: ConnectionError")
+def check_http_status(ip_address):
+  try:
+    r = requests.get("http://" + str(ip_address))
+    if r.status_code == 200:
+      return "Success"
+    else:
+      return "Error"
+  except:
+    return "Error"
 
-start_ip = int(input("Enter the starting IP address: "))
-end_ip = int(input("Enter the ending IP address: "))
+def scan_cidr(cidr):
+  subnet = ipaddress.ip_network(cidr)
+  for ip in subnet:
+    status = check_http_status(ip)
+    print(str(ip) + ": " + status)
 
-scan_range(start_ip, end_ip)
+# Scan the CIDR range 1.2.3.4/24
+scan_cidr("1.2.3.4/24")

@@ -1,21 +1,20 @@
-import requests
 import ipaddress
+import requests
 
-def check_http_status(ip_address):
-  try:
-    r = requests.get("http://" + str(ip_address))
-    if r.status_code == 200:
-      return "Success"
-    else:
-      return "Error"
-  except:
-    return "Error"
+# Prompt the user to enter a CIDR range
+cidr_range = input("Enter a CIDR range to scan: ")
 
-def scan_cidr(cidr):
-  subnet = ipaddress.ip_network(cidr)
-  for ip in subnet:
-    status = check_http_status(ip)
-    print(str(ip) + ": " + status)
+# Convert the CIDR range to a network object
+network = ipaddress.ip_network(cidr_range)
 
-# Scan the CIDR range 1.2.3.4/24
-scan_cidr("1.2.3.4/24")
+# Iterate over all of the addresses in the network
+for address in network:
+   # Send a request to the address and get the response
+   try:
+       response = requests.get(f"http://{address}")
+       status = response.status_code
+   except:
+       status = "Failed to connect"
+
+   print(f"Scanning {address}: HTTP {status}")
+

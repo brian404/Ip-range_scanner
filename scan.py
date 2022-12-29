@@ -11,10 +11,15 @@ network = ipaddress.ip_network(cidr_range)
 for address in network:
    # Send a request to the address and get the response
    try:
-       response = requests.get(f"http://{address}")
+       response = requests.get(f"http://{address}", timeout=1)
        status = response.status_code
+       status_text = "Alive"
    except:
-       status = "Failed to connect"
+       status = None
+       status_text = "Dead"
 
-   print(f"Scanning {address}: HTTP {status}")
+   if status:
+       print(f"{address}: {status_text} (HTTP {status})")
+   else:
+       print(f"{address}: {status_text}")
 
